@@ -1,0 +1,36 @@
+#wallee_manual_notif_wrapper div{
+	margin-left: 20px;
+    margin-right: 20px;
+}
+
+.wallee-component > ul {
+    padding: 0;
+    margin: 0;
+}
+.wallee-component, .wallee-component > ul, .wallee-component > ul > li {
+    display: flex !important;
+    align-items: stretch;
+}
+
+.wallee-component > ul > li > a {
+    display: flex;
+    align-items: center;
+}
+
+.wallee-icon-bullhorn-svg {
+  display: none;
+}
+
+.wallee-component .wallee-icon-bullhorn-svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+.wallee-component #wallee_manual_notif .wallee_manual_notif::after {
+  display: none;
+}
+
+.wallee-component #wallee_manual_notif_number_wrapper{
+	display:none;
+}
