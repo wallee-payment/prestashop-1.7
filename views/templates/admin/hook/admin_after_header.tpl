@@ -1,4 +1,4 @@
-<div id="wallee_notifications" style="display:none";>
+<div id="wallee_notifications" style="display:none;">
 	<li id="wallee_manual_notif"class="dropdown">	
 		<a href="javascript:void(0);" class="dropdown-toggle wallee_manual_notif" data-toggle="dropdown">
 			<i class="icon-bullhorn"></i>
