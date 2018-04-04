@@ -13,7 +13,7 @@ if (! defined('_PS_VERSION_')) {
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache Software License (ASL 2.0)
  */
 
-define('WALLEE_VERSION', '1.0.1');
+define('WALLEE_VERSION', '1.0.2');
 
 require_once (__DIR__ . DIRECTORY_SEPARATOR . 'wallee_autoloader.php');
 require_once (__DIR__ . DIRECTORY_SEPARATOR . 'wallee-sdk' . DIRECTORY_SEPARATOR . 'autoload.php');
@@ -47,12 +47,6 @@ class Wallee extends Wallee_AbstractModule
         );
     }
 
-    protected function installConfiguration()
-    {
-        return Configuration::updateValue(self::CK_MAIL, true) &&
-             Configuration::updateValue(self::CK_INVOICE, true) &&
-             Configuration::updateValue(self::CK_PACKING_SLIP, true);
-    }
 
     public function uninstall()
     {
@@ -60,18 +54,6 @@ class Wallee extends Wallee_AbstractModule
              $this->uninstallConfigurationValues();
     }
 
-    protected function uninstallConfigurationValues()
-    {
-         return Configuration::deleteByName(self::CK_USER_ID) &&
-             Configuration::deleteByName(self::CK_APP_KEY) &&
-             Configuration::deleteByName(self::CK_SPACE_ID) &&
-             Configuration::deleteByName(self::CK_SPACE_VIEW_ID) &&
-             Configuration::deleteByName(self::CK_MAIL) &&
-             Configuration::deleteByName(self::CK_INVOICE) &&
-             Configuration::deleteByName(self::CK_PACKING_SLIP) &&
-             Configuration::deleteByName(self::CK_FEE_ITEM) &&
-             Configuration::deleteByName(Wallee_Service_ManualTask::CONFIG_KEY);
-    }
 
     public function getContent()
     {
@@ -82,6 +64,7 @@ class Wallee extends Wallee_AbstractModule
         $output .= $this->handleSaveEmail();
         $output .= $this->handleSaveFeeItem();
         $output .= $this->handleSaveDownload();
+        $output .= $this->handleSaveOrderStatus();
         return $output . $this->displayForm();
     }
     
@@ -103,7 +86,8 @@ class Wallee extends Wallee_AbstractModule
         return array(
             $this->getEmailForm(),
             $this->getFeeForm(),
-            $this->getDocumentForm()
+            $this->getDocumentForm(),
+            $this->getOrderStatusForm()
         );
     }
     
@@ -113,7 +97,8 @@ class Wallee extends Wallee_AbstractModule
           $this->getApplicationConfigValues(),
           $this->getEmailConfigValues(),
           $this->getFeeItemConfigValues(),
-          $this->getDownloadConfigValues()
+          $this->getDownloadConfigValues(),
+          $this->getOrderStatusConfigValues()
         );
     }
 
