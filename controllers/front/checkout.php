@@ -31,6 +31,7 @@ class WalleeCheckoutModuleFrontController extends ModuleFrontController
     		$presentedCart = $this->cart_presenter->present(
     		    $cart
     		);
+    		$this->assignGeneralPurposeVariables();
     		$reponse = array(
     		    'result' => 'success',
     		    'cartHash' => $cartHash,
