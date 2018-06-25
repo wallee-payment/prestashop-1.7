@@ -12,7 +12,7 @@ if (! defined('_PS_VERSION_')) {
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache Software License (ASL 2.0)
  */
 
-define('WALLEE_VERSION', '1.0.4');
+define('WALLEE_VERSION', '1.0.5');
 
 require_once (__DIR__ . DIRECTORY_SEPARATOR . 'wallee_autoloader.php');
 require_once (__DIR__ . DIRECTORY_SEPARATOR . 'wallee-sdk' . DIRECTORY_SEPARATOR .
@@ -62,6 +62,7 @@ class Wallee extends Wallee_AbstractModule
         $output .= $this->handleSaveFeeItem();
         $output .= $this->handleSaveDownload();
         $output .= $this->handleSaveOrderStatus();
+        $output .= $this->displayHelpButtons();
         return $output . $this->displayForm();
     }
 
@@ -69,10 +70,9 @@ class Wallee extends Wallee_AbstractModule
     {
         $output = "";
         if (! Module::isInstalled('cronjobs') || ! Module::isEnabled('cronjobs')) {
-            $error = "<b>" . $this->l("The module 'Cron tasks manager ' is not active.") . "</b>";
+            $error = "<b>" . $this->l('The module "Cron tasks manager" is not active.') . "</b>";
             $error .= "<br/>";
-            $error .= $this->l(
-                "This module is required for updating pending transactions, completions, voids and refunds.");
+            $error .= $this->l('This module is required for updating pending transactions, completions, voids and refunds.');
             $error .= "<br/>";
             $output .= $this->displayError($error);
         }
@@ -177,8 +177,7 @@ class Wallee extends Wallee_AbstractModule
                 array(
                     'walleeCheckoutUrl' => $this->context->link->getModuleLink(
                         'wallee', 'checkout', array(), true),
-                    'walleeMsgJsonError' => $this->l(
-                        'The server experienced an unexpected error, you may try again or try to use a different payment method.')
+                    'walleeMsgJsonError' => $this->l('The server experienced an unexpected error, you may try again or try to use a different payment method.')
                 ));
             if (isset($this->context->cart) && Validate::isLoadedObject($this->context->cart)) {
                 try {

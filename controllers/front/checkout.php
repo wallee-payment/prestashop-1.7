@@ -63,7 +63,7 @@ class WalleeCheckoutModuleFrontController extends ModuleFrontController
     		$this->ajaxDie(Tools::jsonEncode($reponse));
 		}
 		catch(Exception $e){
-		    $this->context->cookie->wle_error = $this->module->l("There was an issue during the checkout, please try again");
+		    $this->context->cookie->wle_error = $this->module->l('There was an issue during the checkout, please try again.');
 		    $this->ajaxDie(Tools::jsonEncode(array('result' => 'failure')));
 		}
 	}
