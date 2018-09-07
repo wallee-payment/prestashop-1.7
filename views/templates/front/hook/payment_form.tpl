@@ -8,6 +8,7 @@
  *}
 <form action="{$orderUrl|escape:'html'}" class="wallee-payment-form" data-method-id="{$methodId}">
 	<div id="wallee-{$methodId}">
+		<input type="hidden" id="wallee-iframe-possible-{$methodId}" name="wallee-iframe-possible-{$methodId}" value="false" />
 		<div id="wallee-loader-{$methodId}" class="wallee-loader"></div>
 	</div>
 </form>

@@ -24,9 +24,9 @@ class WalleeCheckoutModuleFrontController extends ModuleFrontController
     		
     		if($methodId !== null){
         		$methodConfiguration = new Wallee_Model_MethodConfiguration($methodId);
-        		Wallee_FeeHelper::addFeeProductToCart($methodConfiguration, $cart);			
+        		Wallee_FeeHelper::addFeeProductToCart($methodConfiguration, $cart);
+        		Wallee_Service_Transaction::instance()->getTransactionFromCart($cart);
     		}
-    		Wallee_Service_Transaction::instance()->getTransactionFromCart($cart);
     		$cartHash = Wallee_Helper::calculateCartHash($cart);
     		$presentedCart = $this->cart_presenter->present(
     		    $cart
@@ -63,7 +63,7 @@ class WalleeCheckoutModuleFrontController extends ModuleFrontController
     		$this->ajaxDie(Tools::jsonEncode($reponse));
 		}
 		catch(Exception $e){
-		    $this->context->cookie->wle_error = $this->module->l('There was an issue during the checkout, please try again.');
+		    $this->context->cookie->wle_error = $this->module->l('There was an issue during the checkout, please try again.', 'checkout');
 		    $this->ajaxDie(Tools::jsonEncode(array('result' => 'failure')));
 		}
 	}
