@@ -10,7 +10,7 @@
 <div sytle="display:none" class="wallee-method-data" data-method-id="{$methodId}" data-configuration-id="{$configurationId}"></div>
 <section>
   {if !empty($description)}
-    <p>{$description}</p>
+    <p>{$description nofilter}</p>
   {/if}
   {if !empty($feeValues)}
 	<span class="wallee-payment-fee"><span class="wallee-payment-fee-text">{l s='Additional Fee:' mod='wallee'}</span>
