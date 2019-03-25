@@ -213,19 +213,22 @@ jQuery(function($) {
 		},
 		
 		show_new_errors : function(messages){
+			if( typeof messages == 'undefined'){
+				return;
+			}
 			$("#notifications").append('<div class="container"><article class="alert alert-danger" role="alert" data-alert="danger"><ul id="wallee-errors"></ul></article></div>');
-			if (typeof messages == 'object') {
+			if (messages.constructor === Array) {
+		    	for (var i = 0; i < messages.length; i++) {
+		    		$("#wallee-errors").append("<li>"+messages[i]+"</li>");
+		    	}
+		    } else if (typeof messages == 'object') {
 				for (var prop in messages) {
 					if (messages.hasOwnProperty(prop)) { 
-						$("wallee-errors").append("<li>"+messages[prop]+"</li>");
+						$("#wallee-errors").append("<li>"+messages[prop]+"</li>");
 					}
 				}
-		    } else if (messages.constructor === Array) {
-		    	for (var i = 0; i < messages.length; i++) {
-		    		$("wallee-errors").append("<li>"+messages[i]+"</li>");
-		    	}
 		    } else {
-		    	$("wallee-errors").append("<li>"+messages+"</li>");
+		    	$("#wallee-errors").append("<li>"+messages+"</li>");
 		    }
 		},
 		
