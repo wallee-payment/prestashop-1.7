@@ -37,7 +37,8 @@ class WalleeOrderModuleFrontController extends ModuleFrontController
             die();
         }
         //Ensure Fees are correct
-        Wallee_FeeHelper::removeFeeProductFromCart($cart);
+        Wallee_FeeHelper::removeFeeSurchargeProductsFromCart($cart);        
+        Wallee_FeeHelper::addSurchargeProductToCart($cart);
         Wallee_FeeHelper::addFeeProductToCart($methodConfiguration, $cart);
         if ($cartHash != Wallee_Helper::calculateCartHash($cart)) {
             $this->context->cookie->wle_error = $this->module->l('The cart was changed, please try again.', 'order');

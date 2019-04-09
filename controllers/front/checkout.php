@@ -18,9 +18,9 @@ class WalleeCheckoutModuleFrontController extends ModuleFrontController
         $methodId = Tools::getValue('methodId', null);
         $cart = $this->context->cart;
         try {
-            Wallee_FeeHelper::removeFeeProductFromCart($cart);
-            
+            Wallee_FeeHelper::removeFeeSurchargeProductsFromCart($cart);
             if ($methodId !== null) {
+                Wallee_FeeHelper::addSurchargeProductToCart($cart);
                 $methodConfiguration = new Wallee_Model_MethodConfiguration($methodId);
                 Wallee_FeeHelper::addFeeProductToCart($methodConfiguration, $cart);
                 Wallee_Service_Transaction::instance()->getTransactionFromCart($cart);

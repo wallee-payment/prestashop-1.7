@@ -15,16 +15,16 @@ img.wallee-image{
 	width: 32px;
 }
 
-span.wallee-payment-fee {
+span.wallee-additional-amount {
 	display:block;
 	font-size: 0.8em;
 }
 
-span.wallee-payment-fee span.wallee-payment-fee-text{
+span.wallee-additional-amount span.wallee-additional-amount-text{
 	font-weight: normal;
 }
 
-span.wallee-payment-fee span.wallee-payment-fee-value{
+span.wallee-additional-amount span.wallee-additional-amount-value{
 	font-weight: bold;
 }
 
