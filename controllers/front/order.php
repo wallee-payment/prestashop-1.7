@@ -37,7 +37,7 @@ class WalleeOrderModuleFrontController extends ModuleFrontController
             die();
         }
         //Ensure Fees are correct
-        Wallee_FeeHelper::removeFeeSurchargeProductsFromCart($cart);        
+        Wallee_FeeHelper::removeFeeSurchargeProductsFromCart($cart);
         Wallee_FeeHelper::addSurchargeProductToCart($cart);
         Wallee_FeeHelper::addFeeProductToCart($methodConfiguration, $cart);
         if ($cartHash != Wallee_Helper::calculateCartHash($cart)) {
