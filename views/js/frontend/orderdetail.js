@@ -7,9 +7,9 @@
  * @copyright 2017 - 2019 customweb GmbH
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache Software License (ASL 2.0)
  */
-jQuery(function($) {    
-    $('#wallee_documents').find('a').each(function(key, element){
-	
-		$("#order-infos ul").append("<li>").append(element);
+jQuery(function ($) {
+    $('#wallee_documents').find('a').each(function (key, element) {
+    
+        $("#order-infos ul").append("<li>").append(element);
     });
 });

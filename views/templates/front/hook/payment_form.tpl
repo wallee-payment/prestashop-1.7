@@ -7,9 +7,9 @@
  * @copyright 2017 - 2019 customweb GmbH
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache Software License (ASL 2.0)
  *}
-<form action="{$orderUrl|escape:'html'}" class="wallee-payment-form" data-method-id="{$methodId}">
-	<div id="wallee-{$methodId}">
-		<input type="hidden" id="wallee-iframe-possible-{$methodId}" name="wallee-iframe-possible-{$methodId}" value="false" />
-		<div id="wallee-loader-{$methodId}" class="wallee-loader"></div>
+<form action="{$orderUrl|escape:'html'}" class="wallee-payment-form" data-method-id="{$methodId|escape:'html':'UTF-8'}">
+	<div id="wallee-{$methodId|escape:'html':'UTF-8'}">
+		<input type="hidden" id="wallee-iframe-possible-{$methodId|escape:'html':'UTF-8'}" name="wallee-iframe-possible-{$methodId|escape:'html':'UTF-8'}" value="false" />
+		<div id="wallee-loader-{$methodId|escape:'html':'UTF-8'}" class="wallee-loader"></div>
 	</div>
 </form>

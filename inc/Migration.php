@@ -9,9 +9,8 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache Software License (ASL 2.0)
  */
 
-class Wallee_Migration extends Wallee_AbstractMigration
+class WalleeMigration extends WalleeAbstractmigration
 {
-   
     protected static function getMigrations()
     {
         return array(
@@ -20,7 +19,7 @@ class Wallee_Migration extends Wallee_AbstractMigration
             '1.0.2' => 'tokenInfoImproved',
             '1.0.3' => 'updateImageBase',
             '1.0.4' => 'userFailureMessage',
-            
+            '1.0.5' => 'addCronJob'
         );
     }
 
@@ -28,20 +27,56 @@ class Wallee_Migration extends Wallee_AbstractMigration
     {
         static::installTableBase();
     }
-    
+
     public static function orderStatusUpdate()
     {
         static::installOrderStatusConfigBase();
         static::installOrderPaymentSaveHookBase();
     }
-    
+
     public static function tokenInfoImproved()
     {
         static::updateCustomerIdOnTokenInfoBase();
     }
-    
+
     public static function userFailureMessage()
     {
         static::userFailureMessageBase();
+    }
+    
+    public static function addCronJob()
+    {
+        $dbInstance = DB::getInstance();
+        $result = $dbInstance->execute(
+            "CREATE TABLE IF NOT EXISTS " . _DB_PREFIX_ . "wle_cron_job(
+                `id_cron_job` int(10) unsigned NOT NULL AUTO_INCREMENT,
+                `constraint_key` int(10),
+                `state` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+                `security_token` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+                `date_scheduled` datetime,
+                `date_started` datetime,
+                `date_finished` datetime,
+                `error_msg` longtext COLLATE utf8_unicode_ci,
+                PRIMARY KEY (`id_cron_job`),
+                UNIQUE KEY `unq_constraint_key` (`constraint_key`),
+                INDEX `idx_state` (`state`),
+                INDEX `idx_security_token` (`security_token`),
+                INDEX `idx_date_scheduled` (`date_scheduled`),
+                INDEX `idx_date_started` (`date_started`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci"
+        );
+        
+        if ($result === false) {
+            throw new Exception($dbInstance->getMsgError());
+        }
+        $moduleInstance = WalleeHelper::getModuleInstance();
+        $moduleInstance->registerHook('walleeCron');
+        $moduleInstance->registerHook('displayTop');
+        $moduleInstance->unregisterHook('actionCronJob');
+        
+        $controllers = $moduleInstance->getBackendControllers();
+        if (!Tab::getIdFromClassName('AdminWalleeCronJobs')) {
+            WalleeBasemodule::addTab($moduleInstance, 'AdminWalleeCronJobs', $controllers['AdminWalleeCronJobs']['name'], $controllers['AdminWalleeCronJobs']['parentId']);
+        }
     }
 }
