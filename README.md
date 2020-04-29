@@ -13,11 +13,15 @@ This repository contains the PrestaShop wallee payment module that enables the s
 
 ## Documentation
 
-* [English](https://plugin-documentation.wallee.com/wallee-payment/prestashop-1.7/1.1.14/docs/en/documentation.html)
+* [English](https://plugin-documentation.wallee.com/wallee-payment/prestashop-1.7/1.1.16/docs/en/documentation.html)
+
+## Support
+
+Support queries can be issued on the [wallee support site](https://app-wallee.com/space/select?target=/support).
 
 ## License
 
-Please see the [license file](https://github.com/wallee-payment/prestashop-1.7/blob/1.1.14/LICENSE) for more information.
+Please see the [license file](https://github.com/wallee-payment/prestashop-1.7/blob/1.1.16/LICENSE) for more information.
 
 ## Other PrestaShop Versions
 
