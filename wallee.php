@@ -29,7 +29,7 @@ class Wallee extends PaymentModule
         $this->author = 'Customweb GmbH';
         $this->bootstrap = true;
         $this->need_instance = 0;
-        $this->version = '1.2.1';
+        $this->version = '1.2.2';
         $this->displayName = 'wallee';
         $this->description = $this->l('This PrestaShop module enables to process payments with %s.');
         $this->description = sprintf($this->description, 'wallee');
@@ -423,15 +423,25 @@ class Wallee extends PaymentModule
     {
         WalleeBasemodule::hookDisplayBackOfficeHeader($this, $params);
     }
-    
+
     public function hookDisplayAdminOrderLeft($params)
     {
         return WalleeBasemodule::hookDisplayAdminOrderLeft($this, $params);
     }
-    
+
     public function hookDisplayAdminOrderTabOrder($params)
     {
         return WalleeBasemodule::hookDisplayAdminOrderTabOrder($this, $params);
+    }
+    
+    public function hookDisplayAdminOrderMain($params)
+    {
+        return WalleeBasemodule::hookDisplayAdminOrderMain($this, $params);
+    }
+    
+    public function hookDisplayAdminOrderTabLink($params)
+    {
+        return WalleeBasemodule::hookDisplayAdminOrderTabLink($this, $params);
     }
     
     public function hookDisplayAdminOrderContentOrder($params)
@@ -457,5 +467,10 @@ class Wallee extends PaymentModule
     public function hookActionOrderEdited($params)
     {
         WalleeBasemodule::hookActionOrderEdited($this, $params);
+    }
+    
+    public function hookActionProductCancel($params)
+    {
+        WalleeBasemodule::hookActionProductCancel($this, $params);
     }
 }
