@@ -10,25 +10,25 @@
 jQuery(function ($) {
 
     var wallee_checkout = {
-        
-        
+
+
         payment_methods : {},
         configuration_id: null,
         cartHash: null,
-        
-    
+
+
         init : function () {
             if ($('#wallee-iframe-handler').length) {
                 $(".wallee-method-data").each(function (key, element) {
                     $("#"+psId+"-container").parent().remove();
-                
+
                 });
                 return;
             }
             this.add_listeners();
             this.modify_content();
         },
-    
+
         modify_content : function () {
             $(".wallee-method-data").each(function (key, element) {
                 var infoId = $(element).closest('div.additional-information').attr('id');
@@ -41,7 +41,7 @@ jQuery(function ($) {
                 $("#"+psId).data("wallee-method-id", $(element).data("method-id")).data("wallee-configuration-id", $(element).data("configuration-id"));
             });
         },
-        
+
         add_listeners : function () {
             var self = this;
             $("input[name='payment-option']").off("click.wallee").on("click.wallee", {
@@ -58,7 +58,7 @@ jQuery(function ($) {
                     //This is the info message and sould not be used as method
                 }
             });
-            
+
 
         },
 
@@ -100,13 +100,13 @@ jQuery(function ($) {
             if (current_method.data('module-name') === 'wallee') {
                 self.register_method(current_method.data("wallee-method-id"), current_method.data("wallee-configuration-id"), "wallee-"+current_method.data("wallee-method-id"));
             }
-            
+
         },
-        
+
         get_selected_payment_method : function () {
                return $("input[name='payment-option']:checked");
         },
-        
+
         register_method : function (method_id, configuration_id, container_id) {
 
             if (typeof window.walleeIFrameCheckoutHandler == 'undefined') {
@@ -118,7 +118,7 @@ jQuery(function ($) {
                 };
                 return;
             }
-            
+
             if (typeof this.payment_methods[method_id] != 'undefined'
                 && $('#' + container_id).find("iframe").length > 0) {
                 return;
@@ -137,11 +137,11 @@ jQuery(function ($) {
                 $('#wallee-loader-'+method_id).remove();
                 $('#wallee-iframe-possible-'+method_id).remove();
             });
-            
+
             this.payment_methods[method_id].handler
                 .create(self.payment_methods[method_id].container_id);
         },
-        
+
         process_submit_button : function (method_id) {
             $('#payment-confirmation button').attr('disabled', true);
             this.show_loading_spinner();
@@ -151,7 +151,7 @@ jQuery(function ($) {
             }
             this.payment_methods[method_id].handler.validate();
         },
-        
+
         process_validation : function (method_id, validation_result) {
             if (validation_result.success) {
                 this.create_order(method_id);
@@ -162,7 +162,7 @@ jQuery(function ($) {
                 this.show_new_errors(validation_result.errors);
             }
         },
-        
+
         create_order : function (method_id) {
             var form = $('#wallee-'+method_id).closest('form.wallee-payment-form');
             var self = this;
@@ -199,14 +199,14 @@ jQuery(function ($) {
                     self.show_new_errors(walleeMsgJsonError);
                 }
             });
-            
-            
+
+
         },
-        
+
         remove_existing_errors : function () {
             $("#notifications").empty();
         },
-        
+
         show_new_errors : function (messages) {
             if ( typeof messages == 'undefined') {
                 return;
@@ -226,18 +226,18 @@ jQuery(function ($) {
                 $("#wallee-errors").append("<li>"+messages+"</li>");
             }
         },
-        
+
         show_loading_spinner : function () {
             $("#checkout-payment-step").css({position:  "relative"});
             $("#checkout-payment-step").append('<div class="wallee-blocker" id="wallee-blocker"><div class="wallee-loader"></div></div>')
         },
-        
+
         hide_loading_spinner : function () {
             $("#checkout-payment-step").css({position:  ""});
             $("#wallee-blocker").remove();
         }
     };
-    
+
     wallee_checkout.init();
-    
+
 });
