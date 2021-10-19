@@ -29,13 +29,13 @@ class Wallee extends PaymentModule
         $this->author = 'Customweb GmbH';
         $this->bootstrap = true;
         $this->need_instance = 0;
-        $this->version = '1.2.7';
+        $this->version = '1.2.8';
         $this->displayName = 'wallee';
         $this->description = $this->l('This PrestaShop module enables to process payments with %s.');
         $this->description = sprintf($this->description, 'wallee');
         $this->module_key = 'da87433bdf5237b4d9755ce977402e47';
         $this->ps_versions_compliancy = array(
-            'min' => '1.7.7',
+            'min' => '1.7',
             'max' => _PS_VERSION_
         );
         parent::__construct();
