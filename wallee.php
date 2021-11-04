@@ -1,4 +1,5 @@
 <?php
+
 /**
  * wallee Prestashop
  *
@@ -9,16 +10,18 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache Software License (ASL 2.0)
  */
 
-if (! defined('_PS_VERSION_')) {
+if (!defined('_PS_VERSION_')) {
     exit();
 }
+
+use PrestaShop\PrestaShop\Core\Domain\Order\CancellationActionType;
 
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'wallee_autoloader.php');
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'wallee-sdk' . DIRECTORY_SEPARATOR .
     'autoload.php');
 class Wallee extends PaymentModule
 {
-    
+
     /**
      * Class constructor
      */
@@ -29,7 +32,7 @@ class Wallee extends PaymentModule
         $this->author = 'Customweb GmbH';
         $this->bootstrap = true;
         $this->need_instance = 0;
-        $this->version = '1.2.8';
+        $this->version = '1.2.9';
         $this->displayName = 'wallee';
         $this->description = $this->l('This PrestaShop module enables to process payments with %s.');
         $this->description = sprintf($this->description, 'wallee');
@@ -43,12 +46,12 @@ class Wallee extends PaymentModule
             $this->l('Are you sure you want to uninstall the %s module?', 'abstractmodule'),
             'wallee'
         );
-        
+
         // Remove Fee Item
         if (isset($this->context->cart) && Validate::isLoadedObject($this->context->cart)) {
             WalleeFeehelper::removeFeeSurchargeProductsFromCart($this->context->cart);
         }
-        if (! empty($this->context->cookie->wle_error)) {
+        if (!empty($this->context->cookie->wle_error)) {
             $errors = $this->context->cookie->wle_error;
             if (is_string($errors)) {
                 $this->context->controller->errors[] = $errors;
@@ -61,38 +64,38 @@ class Wallee extends PaymentModule
             $this->context->cookie->wle_error = null;
         }
     }
-    
+
     public function addError($error)
     {
         $this->_errors[] = $error;
     }
-    
+
     public function getContext()
     {
         return $this->context;
     }
-    
+
     public function getTable()
     {
         return $this->table;
     }
-    
+
     public function getIdentifier()
     {
         return $this->identifier;
     }
-    
+
     public function install()
     {
-        if (! WalleeBasemodule::checkRequirements($this)) {
+        if (!WalleeBasemodule::checkRequirements($this)) {
             return false;
         }
-        if (! parent::install()) {
+        if (!parent::install()) {
             return false;
         }
         return WalleeBasemodule::install($this);
     }
-    
+
     public function uninstall()
     {
         return parent::uninstall() && WalleeBasemodule::uninstall($this);
@@ -112,11 +115,11 @@ class Wallee extends PaymentModule
                 'name' => 'wallee ' . $this->l('Payment Methods')
             ),
             'AdminWalleeDocuments' => array(
-                'parentId' => - 1, // No Tab in navigation
+                'parentId' => -1, // No Tab in navigation
                 'name' => 'wallee ' . $this->l('Documents')
             ),
             'AdminWalleeOrder' => array(
-                'parentId' => - 1, // No Tab in navigation
+                'parentId' => -1, // No Tab in navigation
                 'name' => 'wallee ' . $this->l('Order Management')
             ),
             'AdminWalleeCronJobs' => array(
@@ -130,12 +133,12 @@ class Wallee extends PaymentModule
     {
         return WalleeBasemodule::installConfigurationValues();
     }
-    
+
     public function uninstallConfigurationValues()
     {
         return WalleeBasemodule::uninstallConfigurationValues();
     }
-    
+
     public function getContent()
     {
         $output = WalleeBasemodule::getMailHookActiveWarning($this);
@@ -172,7 +175,7 @@ class Wallee extends PaymentModule
             WalleeBasemodule::getOrderStatusConfigValues($this)
         );
     }
-    
+
     public function getConfigurationKeys()
     {
         return WalleeBasemodule::getConfigurationKeys();
@@ -180,10 +183,10 @@ class Wallee extends PaymentModule
 
     public function hookPaymentOptions($params)
     {
-        if (! $this->active) {
+        if (!$this->active) {
             return;
         }
-        if (! isset($params['cart']) || ! ($params['cart'] instanceof Cart)) {
+        if (!isset($params['cart']) || !($params['cart'] instanceof Cart)) {
             return;
         }
         $cart = $params['cart'];
@@ -224,13 +227,13 @@ class Wallee extends PaymentModule
                 $possible->getId(),
                 $shopId
             );
-            if (! $methodConfiguration->isActive()) {
+            if (!$methodConfiguration->isActive()) {
                 continue;
             }
             $methods[] = $methodConfiguration;
         }
         $result = array();
-        
+
         $this->context->smarty->registerPlugin(
             'function',
             'wallee_clean_html',
@@ -239,7 +242,7 @@ class Wallee extends PaymentModule
                 'cleanHtml'
             )
         );
-        
+
         foreach (WalleeHelper::sortMethodConfiguration($methods) as $methodConfiguration) {
             $parameters = WalleeBasemodule::getParametersFromMethodConfiguration($this, $methodConfiguration, $cart, $shopId, $language);
             $parameters['priceDisplayTax'] = Group::getPriceDisplayMethod(Group::getCurrent()->id);
@@ -335,7 +338,7 @@ class Wallee extends PaymentModule
             );
         }
     }
-    
+
     public function hookDisplayTop($params)
     {
         return  WalleeBasemodule::hookDisplayTop($this, $params);
@@ -356,7 +359,7 @@ class Wallee extends PaymentModule
     {
         return $backendController->access('edit');
     }
-    
+
     public function hookWalleeCron($params)
     {
         return WalleeBasemodule::hookWalleeCron($params);
@@ -373,17 +376,17 @@ class Wallee extends PaymentModule
         $result .= WalleeBasemodule::getCronJobItem($this);
         return $result;
     }
-    
+
     public function hookWalleeSettingsChanged($params)
     {
         return WalleeBasemodule::hookWalleeSettingsChanged($this, $params);
     }
-    
+
     public function hookActionMailSend($data)
     {
         return WalleeBasemodule::hookActionMailSend($this, $data);
     }
-    
+
     public function validateOrder(
         $id_cart,
         $id_order_state,
@@ -398,7 +401,7 @@ class Wallee extends PaymentModule
     ) {
         WalleeBasemodule::validateOrder($this, $id_cart, $id_order_state, $amount_paid, $payment_method, $message, $extra_vars, $currency_special, $dont_touch_amount, $secure_key, $shop);
     }
-    
+
     public function validateOrderParent(
         $id_cart,
         $id_order_state,
@@ -413,12 +416,12 @@ class Wallee extends PaymentModule
     ) {
         parent::validateOrder($id_cart, $id_order_state, $amount_paid, $payment_method, $message, $extra_vars, $currency_special, $dont_touch_amount, $secure_key, $shop);
     }
-    
+
     public function hookDisplayOrderDetail($params)
     {
         return WalleeBasemodule::hookDisplayOrderDetail($this, $params);
     }
-    
+
     public function hookDisplayBackOfficeHeader($params)
     {
         WalleeBasemodule::hookDisplayBackOfficeHeader($this, $params);
@@ -433,17 +436,17 @@ class Wallee extends PaymentModule
     {
         return WalleeBasemodule::hookDisplayAdminOrderTabOrder($this, $params);
     }
-    
+
     public function hookDisplayAdminOrderMain($params)
     {
         return WalleeBasemodule::hookDisplayAdminOrderMain($this, $params);
     }
-    
+
     public function hookDisplayAdminOrderTabLink($params)
     {
         return WalleeBasemodule::hookDisplayAdminOrderTabLink($this, $params);
     }
-    
+
     public function hookDisplayAdminOrderContentOrder($params)
     {
         return WalleeBasemodule::hookDisplayAdminOrderContentOrder($this, $params);
@@ -453,29 +456,68 @@ class Wallee extends PaymentModule
     {
         return WalleeBasemodule::hookDisplayAdminOrderTabContent($this, $params);
     }
-    
+
     public function hookDisplayAdminOrder($params)
     {
         return WalleeBasemodule::hookDisplayAdminOrder($this, $params);
     }
-    
+
     public function hookActionAdminOrdersControllerBefore($params)
     {
         return WalleeBasemodule::hookActionAdminOrdersControllerBefore($this, $params);
     }
-    
+
     public function hookActionObjectOrderPaymentAddBefore($params)
     {
         WalleeBasemodule::hookActionObjectOrderPaymentAddBefore($this, $params);
     }
-    
+
     public function hookActionOrderEdited($params)
     {
         WalleeBasemodule::hookActionOrderEdited($this, $params);
     }
-    
+
     public function hookActionProductCancel($params)
     {
-        WalleeBasemodule::hookActionProductCancel($this, $params);
+        // check version too here to only run on > 1.7.7 for now
+        // as there is some overlap in functionality with some previous versions 1.7+
+        if ($params['action'] === CancellationActionType::PARTIAL_REFUND && version_compare(_PS_VERSION_, '1.7.7', '>=')) {
+            $idOrder = Tools::getValue('id_order');
+            $refundParameters = Tools::getAllValues();
+
+            $order = $params['order'];
+
+            if (!Validate::isLoadedObject($order) || $order->module != $this->name) {
+                return;
+            }
+
+            $strategy = WalleeBackendStrategyprovider::getStrategy();
+            if ($strategy->isVoucherOnlyWallee($order, $refundParameters)) {
+                return;
+            }
+
+            // need to manually set this here as it's expected downstream
+            $refundParameters['partialRefund'] = true;
+
+            $backendController = Context::getContext()->controller;
+            $editAccess = 0;
+
+            $access = Profile::getProfileAccess(
+                Context::getContext()->employee->id_profile,
+                (int) Tab::getIdFromClassName('AdminOrders')
+            );
+            $editAccess = isset($access['edit']) && $access['edit'] == 1;
+
+            if ($editAccess) {
+                try {
+                    $parsedData = $strategy->simplifiedRefund($refundParameters);
+                    WalleeServiceRefund::instance()->executeRefund($order, $parsedData);
+                } catch (Exception $e) {
+                    $backendController->errors[] = WalleeHelper::cleanExceptionMessage($e->getMessage());
+                }
+            } else {
+                $backendController->errors[] = Tools::displayError('You do not have permission to delete this.');
+            }
+        }
     }
 }
