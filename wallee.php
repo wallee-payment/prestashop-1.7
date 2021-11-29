@@ -32,7 +32,7 @@ class Wallee extends PaymentModule
         $this->author = 'Customweb GmbH';
         $this->bootstrap = true;
         $this->need_instance = 0;
-        $this->version = '1.2.11';
+        $this->version = '1.2.12';
         $this->displayName = 'wallee';
         $this->description = $this->l('This PrestaShop module enables to process payments with %s.');
         $this->description = sprintf($this->description, 'wallee');
@@ -475,6 +475,16 @@ class Wallee extends PaymentModule
     public function hookActionOrderEdited($params)
     {
         WalleeBasemodule::hookActionOrderEdited($this, $params);
+    }
+
+    public function hookActionOrderGridDefinitionModifier($params)
+    {
+        WalleeBasemodule::hookActionOrderGridDefinitionModifier($this, $params);
+    }
+
+    public function hookActionOrderGridQueryBuilderModifier($params)
+    {
+        WalleeBasemodule::hookActionOrderGridQueryBuilderModifier($this, $params);
     }
 
     public function hookActionProductCancel($params)
