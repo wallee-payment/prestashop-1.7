@@ -16,6 +16,9 @@
  */
 class WalleeBackendStrategyprovider
 {
+    private static $supported_strategies = [
+        '1.7.7.4' => WalleeBackendStrategy1774::class
+    ];
 
     /**
      * Returns the refund strategy to use
@@ -24,6 +27,9 @@ class WalleeBackendStrategyprovider
      */
     public static function getStrategy()
     {
+        if(isset(self::$supported_strategies[_PS_VERSION_])) {
+            return new self::$supported_strategies[_PS_VERSION_];
+        }
         return new WalleeBackendDefaultstrategy();
     }
 }
