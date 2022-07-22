@@ -32,7 +32,7 @@ class Wallee extends PaymentModule
         $this->author = 'Customweb GmbH';
         $this->bootstrap = true;
         $this->need_instance = 0;
-        $this->version = '1.2.26';
+        $this->version = '1.2.27';
         $this->displayName = 'wallee';
         $this->description = $this->l('This PrestaShop module enables to process payments with %s.');
         $this->description = sprintf($this->description, 'wallee');
@@ -145,6 +145,7 @@ class Wallee extends PaymentModule
         $output .= WalleeBasemodule::handleSaveAll($this);
         $output .= WalleeBasemodule::handleSaveApplication($this);
         $output .= WalleeBasemodule::handleSaveEmail($this);
+        $output .= WalleeBasemodule::handleSaveCartRecreation($this);
         $output .= WalleeBasemodule::handleSaveFeeItem($this);
         $output .= WalleeBasemodule::handleSaveDownload($this);
         $output .= WalleeBasemodule::handleSaveSpaceViewId($this);
@@ -157,6 +158,7 @@ class Wallee extends PaymentModule
     {
         return array(
             WalleeBasemodule::getEmailForm($this),
+            WalleeBasemodule::getCartRecreationForm($this),
             WalleeBasemodule::getFeeForm($this),
             WalleeBasemodule::getDocumentForm($this),
             WalleeBasemodule::getSpaceViewIdForm($this),
@@ -169,6 +171,7 @@ class Wallee extends PaymentModule
         return array_merge(
             WalleeBasemodule::getApplicationConfigValues($this),
             WalleeBasemodule::getEmailConfigValues($this),
+            WalleeBasemodule::getCartRecreationConfigValues($this),
             WalleeBasemodule::getFeeItemConfigValues($this),
             WalleeBasemodule::getDownloadConfigValues($this),
             WalleeBasemodule::getSpaceViewIdConfigValues($this),
