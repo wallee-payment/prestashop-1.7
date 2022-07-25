@@ -32,7 +32,7 @@ class Wallee extends PaymentModule
         $this->author = 'Customweb GmbH';
         $this->bootstrap = true;
         $this->need_instance = 0;
-        $this->version = '1.2.27';
+        $this->version = '1.2.28';
         $this->displayName = 'wallee';
         $this->description = $this->l('This PrestaShop module enables to process payments with %s.');
         $this->description = sprintf($this->description, 'wallee');
@@ -150,6 +150,7 @@ class Wallee extends PaymentModule
         $output .= WalleeBasemodule::handleSaveDownload($this);
         $output .= WalleeBasemodule::handleSaveSpaceViewId($this);
         $output .= WalleeBasemodule::handleSaveOrderStatus($this);
+        $output .= WalleeBasemodule::handleSaveCronSettings($this);
         $output .= WalleeBasemodule::displayHelpButtons($this);
         return $output . WalleeBasemodule::displayForm($this);
     }
@@ -162,7 +163,8 @@ class Wallee extends PaymentModule
             WalleeBasemodule::getFeeForm($this),
             WalleeBasemodule::getDocumentForm($this),
             WalleeBasemodule::getSpaceViewIdForm($this),
-            WalleeBasemodule::getOrderStatusForm($this)
+            WalleeBasemodule::getOrderStatusForm($this),
+            WalleeBasemodule::getCronSettingsForm($this),
         );
     }
 
@@ -175,7 +177,8 @@ class Wallee extends PaymentModule
             WalleeBasemodule::getFeeItemConfigValues($this),
             WalleeBasemodule::getDownloadConfigValues($this),
             WalleeBasemodule::getSpaceViewIdConfigValues($this),
-            WalleeBasemodule::getOrderStatusConfigValues($this)
+            WalleeBasemodule::getOrderStatusConfigValues($this),
+            WalleeBasemodule::getCronSettingsConfigValues($this)
         );
     }
 
