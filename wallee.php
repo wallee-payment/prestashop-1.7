@@ -32,7 +32,7 @@ class Wallee extends PaymentModule
         $this->author = 'Customweb GmbH';
         $this->bootstrap = true;
         $this->need_instance = 0;
-        $this->version = '1.2.29';
+        $this->version = '1.2.30';
         $this->displayName = 'wallee';
         $this->description = $this->l('This PrestaShop module enables to process payments with %s.');
         $this->description = sprintf($this->description, 'wallee');
@@ -446,6 +446,56 @@ class Wallee extends PaymentModule
     public function hookDisplayAdminOrderMain($params)
     {
         return WalleeBasemodule::hookDisplayAdminOrderMain($this, $params);
+    }
+
+    public function hookActionOrderSlipAdd($params)
+    {
+        if (version_compare(_PS_VERSION_, '1.7.7', '>=')) {
+            $refundParameters = Tools::getAllValues();
+
+            $order = $params['order'];
+
+            if(!Validate::isLoadedObject($order) || $order->module != $this->name) {
+                $idOrder = Tools::getValue('id_order');
+                if (!$idOrder) {
+                    $order = $params['order'];
+                    $idOrder = (int)$order->id;
+                }
+                $order = new Order((int) $idOrder);
+                if (! Validate::isLoadedObject($order) || $order->module != $module->name) {
+                    return;
+                } 
+            }
+
+            $strategy = WalleeBackendStrategyprovider::getStrategy();
+
+            if ($strategy->isVoucherOnlyWallee($order, $refundParameters)) {
+                return;
+            }
+
+            // need to manually set this here as it's expected downstream
+            $refundParameters['partialRefund'] = true;
+
+            $backendController = Context::getContext()->controller;
+            $editAccess = 0;
+
+            $access = Profile::getProfileAccess(
+                Context::getContext()->employee->id_profile,
+                (int) Tab::getIdFromClassName('AdminOrders')
+            );
+            $editAccess = isset($access['edit']) && $access['edit'] == 1;
+
+            if ($editAccess) {
+                try {
+                    $parsedData = $strategy->simplifiedRefund($refundParameters);
+                    WalleeServiceRefund::instance()->executeRefund($order, $parsedData);
+                } catch (Exception $e) {
+                    $backendController->errors[] = WalleeHelper::cleanExceptionMessage($e->getMessage());
+                }
+            } else {
+                $backendController->errors[] = Tools::displayError('You do not have permission to delete this.');
+            }
+        }
     }
 
     public function hookDisplayAdminOrderTabLink($params)
