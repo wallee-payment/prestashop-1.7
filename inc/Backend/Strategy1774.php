@@ -12,11 +12,11 @@
 /**
  * Webhook processor to handle transaction completion state transitions.
  */
-class WalleeBackendStrategy1774 extends WalleeBackendDefaultstrategy {
+class WalleeBackendStrategy1774 extends WalleeBackendDefaultstrategy
+{
 
     public function isVoucherOnlyWallee(Order $order, array $postData)
     {
         return isset($postData['cancel_product']['voucher']) && $postData['cancel_product']['voucher'] == 1;
     }
-
 }

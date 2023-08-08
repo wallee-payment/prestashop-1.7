@@ -83,7 +83,7 @@ class WalleeBasemodule
     const TOTAL_MODE_WITHOUT_SHIPPING_EXC = 5;
 
     const CK_RUN_LIMIT = 'WLE_RUN_LIMIT';
-        
+    
     private static $recordMailMessages = false;
 
     private static $recordedMailMessages = array();
@@ -117,14 +117,6 @@ class WalleeBasemodule
 
     public function checkRequirements(Wallee $module)
     {
-        if (!Module::isInstalled('mailhook')) {
-            $module->addError(
-                Tools::displayError(
-                    'The module mailhook is required.'
-                )
-            );
-            return false;
-        }
         try {
             \Wallee\Sdk\Http\HttpClientFactory::getClient();
         } catch (Exception $e) {
@@ -237,27 +229,6 @@ class WalleeBasemodule
     public static function displayHelpButtons(Wallee $module)
     {
         return $module->display(dirname(dirname(__FILE__)), 'views/templates/admin/admin_help_buttons.tpl');
-    }
-
-    public static function getMailHookActiveWarning(Wallee $module)
-    {
-        $output = "";
-        if (! Module::isInstalled('mailhook') || ! Module::isEnabled('mailhook')) {
-            $error = "<b>" . $module->l('The module "Mail Hook" is not active.', 'basemodule') . "</b>";
-            $error .= "<br/>";
-            $error .= $module->l(
-                'This module is recommend for handling the shop emails. Otherwise the mail sending behavior may be inappropriate.',
-                'basemodule'
-            );
-            $error .= "<br/>";
-            $error .= sprintf(
-                $module->l('You can download the module %shere%s.', 'basemodule'),
-                '<a href="https://github.com/wallee-payment/prestashop-mailhook/releases" target="_blank">',
-                '</a>'
-            );
-            $output .= $module->displayError($error);
-        }
-        return $output;
     }
 
     public static function handleSaveAll(Wallee $module)
@@ -691,8 +662,8 @@ class WalleeBasemodule
                         'label' => $module->l('Disabled', 'basemodule')
                     )
                 ),
-                'desc' => $module->l('By enabling cart recreation the module will recreate the cart before the payment is authorized; 
-                    upon a failed transaction the cart will be restored for end users. 
+                'desc' => $module->l('By enabling cart recreation the module will recreate the cart before the payment is authorized;
+                    upon a failed transaction the cart will be restored for end users.
                     If this is disabled, the cart will be emptied on a failed transaction.', 'basemodule'),
                 'lang' => false
             )
@@ -1270,7 +1241,8 @@ class WalleeBasemodule
      * @param Wallee $module
      * @return mixed[]
      */
-    public static function getCronSettingsForm(Wallee $module) {
+    public static function getCronSettingsForm(Wallee $module)
+    {
         $cronSettings = array(
             array(
                 'type' => 'text',
@@ -1500,7 +1472,6 @@ class WalleeBasemodule
                 $isCartRecreation = Configuration::get(self::CK_CART_RECREATION, null, null, $cart->id_shop);
 
                 if ($isCartRecreation) {
-
                     // If transaction is no longer pending we stop here and the customer has to go through the checkout
                     // again
                     WalleeServiceTransaction::instance()->checkTransactionPending($originalCart);
@@ -1712,7 +1683,8 @@ class WalleeBasemodule
         return $module->display(dirname(dirname(__FILE__)), 'hook/order_detail.tpl');
     }
 
-    public function hookActionOrderGridQueryBuilderModifier(Wallee $module, $params) {
+    public function hookActionOrderGridQueryBuilderModifier(Wallee $module, $params)
+    {
         $searchQueryBuilder = $params['search_query_builder'];
 
         $searchQueryBuilder->addSelect(
@@ -1727,7 +1699,8 @@ class WalleeBasemodule
         );
     }
 
-    public function hookActionOrderGridDefinitionModifier(Wallee $module, $params) {
+    public function hookActionOrderGridDefinitionModifier(Wallee $module, $params)
+    {
 
         $orderGridDefinition = $params['definition'];
 
@@ -1741,7 +1714,7 @@ class WalleeBasemodule
         $columns->addAfter('payment', $newColumn);
 
         /** @var RowActionCollectionInterface $actionsCollection */
-        $actionsCollectionColumn = Self::getActionsColumn($orderGridDefinition);
+        $actionsCollectionColumn = self::getActionsColumn($orderGridDefinition);
         $actionOptions = $actionsCollectionColumn->getOptions();
         $actionsCollection = $actionOptions['actions'];
 
@@ -1769,7 +1742,7 @@ class WalleeBasemodule
         );
     }
 
-    private function getColumnById( $gridDefinition, string $id)
+    private function getColumnById($gridDefinition, string $id)
     {
         /** @var ColumnInterface $column */
         foreach ($gridDefinition->getColumns() as $column) {

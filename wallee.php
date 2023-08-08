@@ -32,7 +32,7 @@ class Wallee extends PaymentModule
         $this->author = 'Customweb GmbH';
         $this->bootstrap = true;
         $this->need_instance = 0;
-        $this->version = '1.2.35';
+        $this->version = '1.2.36';
         $this->displayName = 'wallee';
         $this->description = $this->l('This PrestaShop module enables to process payments with %s.');
         $this->description = sprintf($this->description, 'wallee');
@@ -141,8 +141,7 @@ class Wallee extends PaymentModule
 
     public function getContent()
     {
-        $output = WalleeBasemodule::getMailHookActiveWarning($this);
-        $output .= WalleeBasemodule::handleSaveAll($this);
+        $output = WalleeBasemodule::handleSaveAll($this);
         $output .= WalleeBasemodule::handleSaveApplication($this);
         $output .= WalleeBasemodule::handleSaveEmail($this);
         $output .= WalleeBasemodule::handleSaveCartRecreation($this);
@@ -461,7 +460,6 @@ class Wallee extends PaymentModule
         if (!empty($params['route']) && $params['route'] == "admin_orders_partial_refund" &&
             !empty($params["form_data"]["shipping_amount"]) && $params["form_data"]["shipping_amount"] != "0.00" &&
             !empty($params['id']) && is_int($params['id']) && $params['id'] > 0) {
-
             $order_id = $params['id'];
             $order = new Order((int) $order_id);
             $refundParameters = Tools::getAllValues();
@@ -484,8 +482,7 @@ class Wallee extends PaymentModule
             try {
                 $parsedData = $strategy->simplifiedRefund($refundParameters);
                 WalleeServiceRefund::instance()->executeRefund($order, $parsedData);
-            }
-            catch (Exception $e) {
+            } catch (Exception $e) {
                 $backendController->errors[] = WalleeHelper::cleanExceptionMessage($e->getMessage());
             }
         }
