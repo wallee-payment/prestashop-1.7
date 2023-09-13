@@ -97,8 +97,10 @@ class WalleeReturnModuleFrontController extends ModuleFrontController
         if (! empty($userFailureMessage)) {
             $this->context->cookie->wle_error = $userFailureMessage;
         }
-
-        // Set cart to cookie
+        
+        $order->setCurrentState(Configuration::get(WalleeBasemodule::CK_STATUS_FAILED));
+        
+	// Set cart to cookie
         $originalCartId = WalleeHelper::getOrderMeta($order, 'originalCart');
         if (! empty($originalCartId)) {
             $this->context->cookie->id_cart = $originalCartId;
