@@ -5,8 +5,6 @@
 # PrestaShop 1.7 wallee Integration
 This repository contains the PrestaShop wallee payment module that enables the shop to process payments with [wallee](https://www.wallee.com).
 
-## To install module manually by dragging up zip file, please download [.zip archive](https://plugin-documentation.wallee.com/wallee-payment/prestashop-1.7/1.2.39/wallee.zip) of module with correct structure required by Prestashop installation
-
 ## To install module manually by dragging up zip file, please download [.zip archive](https://plugin-documentation.wallee.com/wallee-payment/prestashop-1.7/1.2.39/wallee.zip) of module with correct structure required by Prestashop installation.
 
 ## Important Notice for Existing Merchants
