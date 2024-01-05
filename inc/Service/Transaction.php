@@ -5,9 +5,11 @@
  * This Prestashop module enables to process payments with wallee (https://www.wallee.com).
  *
  * @author customweb GmbH (http://www.customweb.com/)
- * @copyright 2017 - 2023 customweb GmbH
+ * @copyright 2017 - 2024 customweb GmbH
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache Software License (ASL 2.0)
  */
+
+use Wallee\Sdk\Model\TransactionLineItemVersionCreate;
 
 /**
  * This service provides functions to deal with wallee transactions.
@@ -35,14 +37,14 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
      * @var \Wallee\Sdk\Service\TransactionService
      */
     private $transactionService;
-    
+
     /**
      * The transaction iframe API service to retrieve js url.
      *
      * @var \Wallee\Sdk\Service\TransactionIframeService
      */
     private $transactionIframeService;
-    
+
     /**
      * The transaction payment page API service to retrieve redirection url.
      *
@@ -71,7 +73,7 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
         }
         return $this->transactionService;
     }
-    
+
     /**
      * Returns the transaction iframe API service.
      *
@@ -86,7 +88,7 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
         }
         return $this->transactionIframeService;
     }
-    
+
     /**
      * Returns the transaction API payment page service.
      *
@@ -154,7 +156,7 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
             $transaction->getLinkedSpaceId(),
             $transaction->getId()
         );
-        
+
         return $js . "&className=walleeIFrameCheckoutHandler";
     }
 
@@ -206,7 +208,7 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
         ));
         $query->setNumberOfEntities(1);
         $result = $chargeAttemptService->search($spaceId, $query);
-        if ($result != null && ! empty($result)) {
+        if ($result != null && !empty($result)) {
             return current($result);
         } else {
             return null;
@@ -218,15 +220,20 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
      *
      * @param int $spaceId
      * @param int $transactionId
-     * @param \Wallee\Sdk\Model\LineItem[] $lineItems
-     * @return \Wallee\Sdk\Model\TransactionLineItemVersion
+     * @param array $lineItems
+     * @return mixed
+     * @throws Exception
      */
-    public function updateLineItems($spaceId, $transactionId, $lineItems)
+    public function updateLineItems(int $spaceId, int $transactionId, array $lineItems)
     {
-        $updateRequest = new \Wallee\Sdk\Model\TransactionLineItemUpdateRequest();
-        $updateRequest->setTransactionId($transactionId);
-        $updateRequest->setNewLineItems($lineItems);
-        return $this->getTransactionService()->updateTransactionLineItems($spaceId, $updateRequest);
+        $data = [
+            'external_id' => uniqid(),
+            'line_items' => $lineItems,
+            'transaction' => $transactionId
+        ];
+
+        $lineItemsCreate = new TransactionLineItemVersionCreate($data);
+        return WalleeHelper::getApiClient()->getTransactionLineItemVersionService()->create($spaceId, $lineItemsCreate);
     }
 
     /**
@@ -320,7 +327,7 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
         $query->setFilter($filter);
         $query->setNumberOfEntities(1);
         $result = $chargeAttemptService->search($transaction->getLinkedSpaceId(), $query);
-        if ($result != null && ! empty($result)) {
+        if ($result != null && !empty($result)) {
             return current($result);
         } else {
             return null;
@@ -366,7 +373,7 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
     {
         $currentCartId = $cart->id;
 
-        if (! isset(self::$possiblePaymentMethodCache[$currentCartId]) ||
+        if (!isset(self::$possiblePaymentMethodCache[$currentCartId]) ||
             self::$possiblePaymentMethodCache[$currentCartId] == null) {
             $transaction = $this->getTransactionFromCart($cart);
             try {
@@ -418,7 +425,7 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
     public function confirmTransaction(Order $dataSource, array $orders, $methodConfigurationId)
     {
         $last = new Exception('Unexpected Error');
-        for ($i = 0; $i < 5; $i ++) {
+        for ($i = 0; $i < 5; $i++) {
             try {
                 $ids = WalleeHelper::getOrderMeta($dataSource, 'mappingIds');
                 $spaceId = $ids['spaceId'];
@@ -462,10 +469,11 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
      * @param \Wallee\Sdk\Model\TransactionPending $transaction
      */
     protected function assembleOrderTransactionData(
-        Order $dataSource,
-        array $orders,
+        Order                                                       $dataSource,
+        array                                                       $orders,
         \Wallee\Sdk\Model\AbstractTransactionPending $transaction
-    ) {
+    )
+    {
         $transaction->setCurrency(WalleeHelper::convertCurrencyIdToCode($dataSource->id_currency));
         $transaction->setBillingAddress($this->getAddress($dataSource->id_address_invoice));
         $transaction->setShippingAddress($this->getAddress($dataSource->id_address_delivery));
@@ -479,7 +487,7 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
         $transaction->setLineItems(WalleeServiceLineitem::instance()->getItemsFromOrders($orders));
 
         $orderComment = $this->getOrderComment($orders);
-        if (! empty($orderComment)) {
+        if (!empty($orderComment)) {
             $transaction->setMetaData(array(
                 'orderComment' => $orderComment
             ));
@@ -529,9 +537,9 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
     {
         $currentCartId = $cart->id;
         $spaceId = Configuration::get(WalleeBasemodule::CK_SPACE_ID, null, $cart->id_shop_group, $cart->id_shop);
-        if (! isset(self::$transactionCache[$currentCartId]) || self::$transactionCache[$currentCartId] == null) {
+        if (!isset(self::$transactionCache[$currentCartId]) || self::$transactionCache[$currentCartId] == null) {
             $ids = WalleeHelper::getCartMeta($cart, 'mappingIds');
-            if (empty($ids) || ! isset($ids['spaceId']) || $ids['spaceId'] != $spaceId) {
+            if (empty($ids) || !isset($ids['spaceId']) || $ids['spaceId'] != $spaceId) {
                 $transaction = $this->createTransactionFromCart($cart);
             } else {
                 $transaction = $this->loadAndUpdateTransactionFromCart($cart);
@@ -557,7 +565,7 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
         $createTransaction->setDeviceSessionIdentifier(Context::getContext()->cookie->wle_device_id);
 
         $spaceViewId = Configuration::get(WalleeBasemodule::CK_SPACE_VIEW_ID, null, null, $cart->id_shop);
-        if (! empty($spaceViewId)) {
+        if (!empty($spaceViewId)) {
             $createTransaction->setSpaceViewId($spaceViewId);
         }
         $this->assembleCartTransactionData($cart, $createTransaction);
@@ -584,13 +592,13 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
     protected function loadAndUpdateTransactionFromCart(Cart $cart)
     {
         $last = new Exception('Unexpected Error');
-        for ($i = 0; $i < 5; $i ++) {
+        for ($i = 0; $i < 5; $i++) {
             try {
                 $ids = WalleeHelper::getCartMeta($cart, 'mappingIds');
                 $transaction = $this->getTransaction($ids['spaceId'], $ids['transactionId']);
                 $customerId = $transaction->getCustomerId();
                 if ($transaction->getState() != \Wallee\Sdk\Model\TransactionState::PENDING ||
-                    (! empty($customerId) && $customerId != $cart->id_customer)) {
+                    (!empty($customerId) && $customerId != $cart->id_customer)) {
                     return $this->createTransactionFromCart($cart);
                 }
                 $pendingTransaction = new \Wallee\Sdk\Model\TransactionPending();
@@ -608,16 +616,17 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
     /**
      * Assemble the transaction data for the given quote.
      *
-     * @param \Cart                                                       $cart
+     * @param \Cart $cart
      * @param \Wallee\Sdk\Model\AbstractTransactionPending $transaction
      *
      * @return \Wallee\Sdk\Model\AbstractTransactionPending
      * @throws \WalleeExceptionInvalidtransactionamount
      */
     protected function assembleCartTransactionData(
-        Cart $cart,
+        Cart                                                        $cart,
         \Wallee\Sdk\Model\AbstractTransactionPending $transaction
-    ) {
+    )
+    {
         $transaction->setCurrency(WalleeHelper::convertCurrencyIdToCode($cart->id_currency));
         $transaction->setBillingAddress($this->getAddress($cart->id_address_invoice));
         $transaction->setShippingAddress($this->getAddress($cart->id_address_delivery));
@@ -654,13 +663,13 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
         $address->setPhoneNumber($prestaAddress->phone);
 
         if ($prestaAddress->id_country != null) {
-            $country = new Country((int) $prestaAddress->id_country);
+            $country = new Country((int)$prestaAddress->id_country);
             $address->setCountry($country->iso_code);
         }
         if ($prestaAddress->id_state != null) {
-            $state = new State((int) $prestaAddress->id_state);
+            $state = new State((int)$prestaAddress->id_state);
             $code = $state->iso_code;
-            if (! empty($code)) {
+            if (!empty($code)) {
                 $address->setPostalState($code);
             }
         }
@@ -695,7 +704,7 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
     protected function getDateOfBirthForCustomerId($id)
     {
         $customer = new Customer($id);
-        if (! empty($customer->birthday) && $customer->birthday != '0000-00-00' &&
+        if (!empty($customer->birthday) && $customer->birthday != '0000-00-00' &&
             Validate::isBirthDate($customer->birthday)) {
             return DateTime::createFromFormat("Y-m-d", $customer->birthday);
         }
@@ -713,7 +722,7 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
     {
         $customer = new Customer($id);
         $gender = new Gender($customer->id_gender);
-        if (! Validate::isLoadedObject($gender)) {
+        if (!Validate::isLoadedObject($gender)) {
             return null;
         }
         if ($gender->type == '0') {
@@ -745,7 +754,7 @@ class WalleeServiceTransaction extends WalleeServiceAbstract
         $messages = array();
         foreach ($orders as $order) {
             $messageCollection = new PrestaShopCollection('Message');
-            $messageCollection->where('id_order', '=', (int) $order->id);
+            $messageCollection->where('id_order', '=', (int)$order->id);
             foreach ($messageCollection->getResults() as $orderMessage) {
                 $messages[] = $orderMessage->message;
             }

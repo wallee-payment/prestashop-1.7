@@ -5,7 +5,7 @@
  * This Prestashop module enables to process payments with wallee (https://www.wallee.com).
  *
  * @author customweb GmbH (http://www.customweb.com/)
- * @copyright 2017 - 2023 customweb GmbH
+ * @copyright 2017 - 2024 customweb GmbH
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache Software License (ASL 2.0)
  */
 
@@ -83,7 +83,7 @@ class WalleeBasemodule
     const TOTAL_MODE_WITHOUT_SHIPPING_EXC = 5;
 
     const CK_RUN_LIMIT = 'WLE_RUN_LIMIT';
-    
+
     private static $recordMailMessages = false;
 
     private static $recordedMailMessages = array();
@@ -105,6 +105,10 @@ class WalleeBasemodule
         WalleeOrderstatus::registerOrderStatus();
         if (! $module->installConfigurationValues()) {
             $module->addError(Tools::displayError('Unable to install configuration.'));
+        }
+
+        if (Module::isInstalled('mailhook') || Module::isEnabled('mailhook')) {
+            $module->addError(Tools::displayError('Module "mailhook" is installed or enabled. It\'s not compatible with our plugin, because include mailhook clasees since v1.2.36. Please remove "mailhook" plugin and try install again.'));
         }
 
         return true;
@@ -641,7 +645,7 @@ class WalleeBasemodule
         }
         return $values;
     }
-    
+
     public static function getCartRecreationForm(Wallee $module)
     {
         $cartRecreationConfig = array(
@@ -1257,7 +1261,7 @@ class WalleeBasemodule
                 ),
             ),
         );
-    
+
         return array(
             'legend' => array(
                 'title' => $module->l('Cron Settings', 'basemodule')
@@ -1532,7 +1536,7 @@ class WalleeBasemodule
                     }
                 }
 
-                
+
                 if (strpos($payment_method, "wallee_") === 0) {
                     $id = Tools::substr($payment_method, strpos($payment_method, "_") + 1);
                     $methodConfiguration = new WalleeModelMethodconfiguration($id);
@@ -2464,18 +2468,18 @@ class WalleeBasemodule
             WalleeHelper::commitDBTransaction();
         }
     }
-    
-    
+
+
     public static function hookDisplayTop(Wallee $module, $params)
     {
         return self::getCronJobItem($module);
     }
-    
+
     public static function getCronJobItem(Wallee $module)
     {
         WalleeCron::cleanUpHangingCrons();
         WalleeCron::insertNewPendingCron();
-        
+
         $currentToken = WalleeCron::getCurrentSecurityTokenForPendingCron();
         if ($currentToken) {
             $url = $module->getContext()->link->getModuleLink(
@@ -2489,8 +2493,8 @@ class WalleeBasemodule
             return '<img src="' . $url . '" style="display:none" />';
         }
     }
-    
-    
+
+
     public static function hookWalleeCron($params)
     {
         $tasks = array();
