@@ -111,7 +111,7 @@ class WalleeServiceRefund extends WalleeServiceAbstract
             $refundJob->setRefundParameters($parsedParameters);
             $refundJob->save();
             // validate Refund Job
-            // $this->createRefundObject($refundJob);
+            $this->createRefundObject($refundJob);
             $currentRefundJob = $refundJob->getId();
             WalleeHelper::commitDBTransaction();
         } catch (Exception $e) {

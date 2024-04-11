@@ -1820,7 +1820,7 @@ class WalleeBasemodule
         }
         self::handleVoucherAddRequest($module);
         self::handleVoucherDeleteRequest($module);
-        // self::handleRefundRequest($module);
+        self::handleRefundRequest($module);
         self::handleCancelProductRequest($module);
     }
 
