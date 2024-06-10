@@ -28,7 +28,7 @@ use \Wallee\Sdk\ObjectSerializer;
  *
  * @category    Class
  * @package     Wallee\Sdk
- * @author      customweb GmbH
+ * @author      wallee AG
  * @license     http://www.apache.org/licenses/LICENSE-2.0 Apache License v2
  */
 class AbstractDebtCollectionCaseUpdate implements ModelInterface, ArrayAccess
@@ -436,7 +436,7 @@ class AbstractDebtCollectionCaseUpdate implements ModelInterface, ArrayAccess
     /**
      * Sets space_view_id
      *
-     * @param int $space_view_id 
+     * @param int $space_view_id The ID of the space view this object is linked to.
      *
      * @return $this
      */
