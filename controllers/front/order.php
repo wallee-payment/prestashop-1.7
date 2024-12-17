@@ -83,7 +83,8 @@ class WalleeOrderModuleFrontController extends ModuleFrontController
             );
             $noIframeParamater = Tools::getValue('wallee-iframe-possible-' . $methodId, null);
             $noIframe = $noIframeParamater == 'false';
-            if ($noIframe) {
+            $checkoutType = Configuration::get(WalleeBasemodule::CK_CHECKOUT_TYPE);
+            if ($noIframe || $checkoutType === WalleeBasemodule::CK_CHECKOUT_TYPE_PAYMENT_PAGE) {
                 $url = WalleeServiceTransaction::instance()->getPaymentPageUrl(
                     $GLOBALS['walleeTransactionIds']['spaceId'],
                     $GLOBALS['walleeTransactionIds']['transactionId']

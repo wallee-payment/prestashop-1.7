@@ -32,7 +32,7 @@ class Wallee extends PaymentModule
         $this->author = 'Customweb GmbH';
         $this->bootstrap = true;
         $this->need_instance = 0;
-        $this->version = '1.2.48';
+        $this->version = '1.2.49';
         $this->displayName = 'wallee';
         $this->description = $this->l('This PrestaShop module enables to process payments with %s.');
         $this->description = sprintf($this->description, 'wallee');
@@ -150,6 +150,7 @@ class Wallee extends PaymentModule
         $output .= WalleeBasemodule::handleSaveSpaceViewId($this);
         $output .= WalleeBasemodule::handleSaveOrderStatus($this);
         $output .= WalleeBasemodule::handleSaveCronSettings($this);
+        $output .= WalleeBasemodule::handleSaveCheckoutTypeSettings($this);
         $output .= WalleeBasemodule::displayHelpButtons($this);
         return $output . WalleeBasemodule::displayForm($this);
     }
@@ -161,6 +162,7 @@ class Wallee extends PaymentModule
             WalleeBasemodule::getCartRecreationForm($this),
             WalleeBasemodule::getFeeForm($this),
             WalleeBasemodule::getDocumentForm($this),
+            WalleeBasemodule::getCheckoutTypeForm($this),
             WalleeBasemodule::getSpaceViewIdForm($this),
             WalleeBasemodule::getOrderStatusForm($this),
             WalleeBasemodule::getCronSettingsForm($this),
@@ -177,7 +179,8 @@ class Wallee extends PaymentModule
             WalleeBasemodule::getDownloadConfigValues($this),
             WalleeBasemodule::getSpaceViewIdConfigValues($this),
             WalleeBasemodule::getOrderStatusConfigValues($this),
-            WalleeBasemodule::getCronSettingsConfigValues($this)
+            WalleeBasemodule::getCronSettingsConfigValues($this),
+            WalleeBasemodule::getCheckoutTypeConfigValues($this)
         );
     }
 
@@ -257,6 +260,7 @@ class Wallee extends PaymentModule
                 array(),
                 true
             );
+            $parameters['isPaymentPageCheckout'] = Configuration::get(WalleeBasemodule::CK_CHECKOUT_TYPE) === WalleeBasemodule::CK_CHECKOUT_TYPE_PAYMENT_PAGE;
             $this->context->smarty->assign($parameters);
             $paymentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
             $paymentOption->setCallToActionText($parameters['name']);
@@ -318,6 +322,11 @@ class Wallee extends PaymentModule
                     'walleeMsgJsonError' => $this->l(
                         'The server experienced an unexpected error, you may try again or try to use a different payment method.'
                     )
+                )
+            );
+            Media::addJsDef(
+                array(
+                'walleeIsPaymentPageCheckout' => Configuration::get(WalleeBasemodule::CK_CHECKOUT_TYPE) === WalleeBasemodule::CK_CHECKOUT_TYPE_PAYMENT_PAGE
                 )
             );
             if (isset($this->context->cart) && Validate::isLoadedObject($this->context->cart)) {

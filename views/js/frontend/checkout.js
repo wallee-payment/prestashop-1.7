@@ -134,6 +134,11 @@ jQuery(function ($) {
                 .setValidationCallback(function (validation_result) {
                     self.process_validation(method_id, validation_result);
                 });
+
+            if (walleeIsPaymentPageCheckout === true) {
+                return;
+            }
+
             this.payment_methods[method_id].handler.setInitializeCallback(function () {
                 $('#wallee-loader-'+method_id).remove();
                 $('#wallee-iframe-possible-'+method_id).remove();
