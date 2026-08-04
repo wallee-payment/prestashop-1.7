@@ -5,7 +5,7 @@
  * This Prestashop module enables to process payments with wallee (https://www.wallee.com).
  *
  * @author customweb GmbH (http://www.customweb.com/)
- * @copyright 2017 - 2025 customweb GmbH
+ * @copyright 2017 - 2026 customweb GmbH
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache Software License (ASL 2.0)
  */
 
@@ -119,6 +119,17 @@ class AdminWalleeMethodSettingsController extends ModuleAdminController
                 )
             );
             return;
+        }
+        try {
+            WalleeServiceMethodconfiguration::instance()->synchronize();
+        } catch (Exception $e) {
+            PrestaShopLogger::addLog($e->getMessage(), 2, null, 'Wallee');
+            $this->displayWarning(
+                $this->module->l(
+                    'Synchronization of the payment method configurations failed.',
+                    'adminwalleemethodsettingscontroller'
+                )
+            );
         }
         $methodConfigurations = array();
         $methods = WalleeModelMethodconfiguration::loadValidForShop(Context::getContext()->shop->id);
